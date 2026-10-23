@@ -16,8 +16,11 @@ RUN apt-get update && apt-get install -y \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 
 # Node
-RUN curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
-RUN bash /tmp/nodesource_setup.sh
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh
+RUN bash /tmp/nodesource_setup.sh && \
+    apt-get update && apt-get install -y --no-install-recommends nodejs && \
+    node -e 'const [major, minor, patch] = process.versions.node.split(".").map(Number); if (major !== 22 || minor < 23 || (minor === 23 && patch < 4)) throw new Error("Node.js 22.23.4 or newer 22.x security release required");' && \
+    rm -rf /var/lib/apt/lists/* /tmp/nodesource_setup.sh
 
 # alias python='python3'
 RUN ln -s /usr/bin/python3 /usr/bin/python
